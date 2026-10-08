@@ -2,7 +2,7 @@
 
 Este registro describe la asistencia recibida durante el proyecto y cómo se comprueba el resultado. Se omiten credenciales, códigos de autenticación y material completo del curso.
 
-## 2026-10-07 — Planificación y entorno
+## Planificación y entorno
 
 **Herramienta:** asistente de IA en Codex.
 
@@ -18,7 +18,7 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Verificación observada:** Node.js 24.21.0, npm 11.19.0, PostgreSQL 17.11 y GitHub CLI 2.102.0 instalados; el estudiante inició PostgreSQL y ejecutó una consulta real que confirmó su conexión. GitHub autenticado y panel de Railway accesible.
 
-## 2026-10-07 — Estructura inicial
+## Estructura inicial
 
 **Solicitud que autoriza esta etapa:** aprobación del plan y confirmación del entorno preparado.
 
@@ -30,7 +30,7 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Límite de esta verificación:** es una comprobación de la estructura y el arranque. No hay todavía endpoints CRUD ni pruebas automatizadas del dominio; no se presenta como una suite de tests aprobada.
 
-## 2026-10-07 — Modelo y SQL
+## Modelo y SQL
 
 **Solicitud:** continuación del paso 2 del plan aprobado, después de confirmar la apertura del proyecto y su arranque local.
 
@@ -44,7 +44,7 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Distinción:** este verificador comprueba SQL real. Los tests unitarios y HTTP con Vitest/Supertest siguen pendientes de su etapa.
 
-## 2026-10-07 — HTTP con arrays
+## HTTP con arrays
 
 **Solicitud:** continuación del paso 3 después de que el estudiante confirmó la verificación SQL y la exploración de los datos.
 
@@ -58,7 +58,7 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Comprobación del almacenamiento:** se inició además un servidor HTTP real, se creó un autor con respuesta 201 y se reinició el proceso. El nuevo autor dejó de existir, como corresponde a esta etapa con arrays. PostgreSQL conservó sus tres autores y cinco posts: las peticiones HTTP no modificaron la base. Los procesos temporales de verificación se cerraron.
 
-## 2026-10-08 — Persistencia PostgreSQL
+## Persistencia PostgreSQL
 
 **Solicitud:** continuar el paso 4 del plan aprobado después de confirmar la etapa HTTP.
 
@@ -74,7 +74,7 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Límite:** estas comprobaciones temporales de integración no constituyen todavía la suite versionada de Vitest/Supertest. Esa suite corresponde al siguiente paso.
 
-## 2026-10-08 — Suite de pruebas
+## Suite de pruebas
 
 **Solicitud del estudiante:** «listo, continúa con paso 5» después de resolver una segunda instancia que ocupaba el puerto 3000.
 
@@ -88,7 +88,7 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Límite:** los resultados no afirman cobertura del 100% ni validan por sí solos el despliegue. OpenAPI y Railway siguen pendientes de sus etapas.
 
-## 2026-10-08 — OpenAPI y documentación de entrega
+## OpenAPI y documentación de entrega
 
 **Solicitud:** continuar el paso 6 tras confirmar que las 96 pruebas pasan.
 
@@ -102,7 +102,7 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Estado:** documentación local comprobada; guía de Railway preparada con fuentes oficiales. El despliegue y la URL pública todavía deben ejecutarse y verificarse en el paso 7.
 
-## 2026-10-08 — Despliegue y persistencia remota
+## Despliegue y persistencia remota
 
 **Solicitud:** continuar el paso 7 del plan aprobado y resolver la conexión con Railway.
 
@@ -116,9 +116,9 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 
 **Límite:** esta comprobación remota complementa las 96 pruebas locales; no afirma disponibilidad permanente del servicio ni cobertura del 100%. El plazo de disponibilidad depende del plan y saldo de Railway.
 
-## 2026-10-08 — Auditoría y cierre
+## Auditoría y cierre
 
-**Solicitud del estudiante:** «ok revisa los pasos de tu plan y culmina».
+**Solicitud del estudiante:** «revisión final de los pasos del plan y finalización».
 
 **Aporte de IA:** comparación del plan y la consigna con los entregables, copia limpia desde GitHub, instalación reproducible, preparación de una base temporal nueva, arranque HTTP real, ejecución final de tests/SQL/OpenAPI y revisión del historial y la documentación. Se añadió el informe de entrega y se actualizó el estado del README; no se incorporaron funcionalidades extra.
 
