@@ -29,3 +29,17 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 **Verificación observada:** instalación reproducible registrada en package-lock.json; npm audit durante la instalación reportó cero vulnerabilidades conocidas; sintaxis JavaScript comprobada; `npm start` inició el servidor y una petición HTTP real a `/` devolvió el 404 esperado sin exponer la cabecera x-powered-by; un puerto inválido fue rechazado. El servidor temporal de comprobación se cerró al terminar.
 
 **Límite de esta verificación:** es una comprobación de la estructura y el arranque. No hay todavía endpoints CRUD ni pruebas automatizadas del dominio; no se presenta como una suite de tests aprobada.
+
+## 2026-10-07 — Modelo y SQL
+
+**Solicitud:** continuación del paso 2 del plan aprobado, después de confirmar la apertura del proyecto y su arranque local.
+
+**Aporte de IA:** esquema authors/posts, seed ficticio, comandos npm para ejecutar SQL y verificador de base de datos real. Se generaron credenciales locales que no se incluyeron en el repositorio.
+
+**Decisiones:** usar SERIAL y TIMESTAMPTZ como en la guía; constraints NOT NULL, UNIQUE, CHECK y FK; normalizar emails para la unicidad; índice sobre author_id; ON DELETE CASCADE explícito. El seed resuelve autores por email y evita IDs fijos. Setup es repetible pero no reemplaza migraciones futuras.
+
+**Seguridad local:** rol específico sin privilegios administrativos, bases de aplicación/pruebas separadas, contraseña aleatoria local y reglas SCRAM acotadas al proyecto. Se verificó que una contraseña incorrecta fuera rechazada y que .env estuviera excluido de Git.
+
+**Verificación observada:** setup/seed ejecutados en PostgreSQL; tres autores y cinco posts en la base de aplicación. Comprobados en miniblog_test: repetición sin duplicados, CRUD, JOIN, fechas/defaults, unicidad, campos obligatorios, textos blancos, email, FK, longitud, tipo booleano, borrado inexistente y cascada. Los cambios de los casos CRUD se revierten con ROLLBACK.
+
+**Distinción:** este verificador comprueba SQL real. Los tests unitarios y HTTP con Vitest/Supertest siguen pendientes de su etapa.

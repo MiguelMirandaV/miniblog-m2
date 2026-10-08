@@ -4,7 +4,7 @@ API REST para gestionar autores y publicaciones, desarrollada con Node.js, Expre
 
 ## Estado del proyecto
 
-En desarrollo: estructura inicial y servidor Express disponibles. Todavía no están implementados el CRUD, los scripts SQL, la conexión a PostgreSQL, los tests ni el despliegue. Este README se actualizará conforme se compruebe cada etapa.
+En desarrollo: estructura inicial, servidor Express, esquema SQL, seed y verificación real de base de datos disponibles. Todavía no están implementados los endpoints CRUD, la conexión del servidor HTTP a PostgreSQL, los tests unitarios/HTTP ni el despliegue.
 
 ## Tecnologías
 
@@ -18,19 +18,27 @@ Las versiones exactas de las dependencias se conservan en `package-lock.json`.
 
 ## Instalación local
 
-Requisitos: Node.js 24, npm y Git. PostgreSQL 17 se utilizará al implementar la persistencia.
+Requisitos: Node.js 24, npm, Git y PostgreSQL 17 funcionando.
 
 ```bash
 git clone https://github.com/MiguelMirandaV/miniblog-m2.git
 cd miniblog-m2
 npm ci
 cp .env.example .env
+```
+
+Crea el rol y las bases, configura tu `.env` y sigue los comandos de [preparación de PostgreSQL](docs/base-de-datos.md#preparación-local-desde-cero). Luego:
+
+```bash
+npm run db:setup
+npm run db:seed
+npm run db:verify
 npm run dev
 ```
 
 El servidor escucha en `http://localhost:3000`. En esta etapa inicial no hay rutas implementadas: una petición a `/` devuelve 404 y no representa un fallo de arranque.
 
-La variable `DATABASE_URL` incluida en el ejemplo es un marcador de posición. El servidor inicial no utiliza la base de datos; sus instrucciones de configuración se añadirán con el esquema SQL.
+Las URLs de `.env.example` contienen marcadores de posición. Configura tus credenciales únicamente en `.env`. Por ahora los scripts SQL utilizan PostgreSQL; el servidor Express se conectará en la etapa de persistencia.
 
 ## Variables de entorno
 
@@ -39,6 +47,7 @@ La variable `DATABASE_URL` incluida en el ejemplo es un marcador de posición. E
 | `NODE_ENV` | Ambiente de ejecución; desarrollo local o producción |
 | `PORT` | Puerto HTTP; por defecto 3000 |
 | `DATABASE_URL` | Conexión PostgreSQL; se configurará localmente, sin publicarla |
+| `TEST_DATABASE_URL` | Conexión separada a miniblog_test, solo para comprobaciones locales |
 
 `.env.example` contiene ejemplos sin credenciales reales. `.env` está excluido de Git. En Railway las variables se configurarán en el servicio correspondiente.
 
@@ -50,6 +59,9 @@ La variable `DATABASE_URL` incluida en el ejemplo es un marcador de posición. E
 | `npm start` | Arranca el servidor sin observar cambios |
 | `npm test` | Ejecuta Vitest una vez; los casos se añadirán en la etapa de testing |
 | `npm run test:watch` | Ejecuta Vitest en modo observación |
+| `npm run db:setup` | Crea tablas e índice en DATABASE_URL, sin borrar datos |
+| `npm run db:seed` | Inserta ejemplos ficticios sin duplicarlos en ejecuciones sucesivas |
+| `npm run db:verify` | Comprueba CRUD y restricciones en miniblog_test |
 
 Actualmente `npm test` informa que no hay archivos de pruebas. No se considera una suite aprobada hasta que existan y pasen casos reales.
 
@@ -65,6 +77,7 @@ src/
   validators/      Validaciones reutilizables de entrada
   middlewares/     Manejo común de peticiones y errores
 sql/               Scripts de creación y datos iniciales
+scripts/           Ejecución de SQL y comprobación de base de datos
 tests/             Pruebas unitarias y HTTP
 docs/              Documentación y registro de uso de IA
 ```
@@ -81,9 +94,12 @@ Los archivos `.gitkeep` conservan temporalmente las carpetas que todavía están
 
 La entidad se llama `authors` en toda la aplicación. La referencia a `users.id` que aparece en un punto de la consigna se interpreta como `authors.id`, de acuerdo con el modelo y el SQL de la guía.
 
+## Base de datos
+
+Un autor puede tener varios posts; cada post pertenece a un autor existente. Eliminar un autor elimina sus posts mediante ON DELETE CASCADE. Los emails se almacenan en minúsculas y sin espacios exteriores para mantener la unicidad. Consulta el [modelo, las reglas y las verificaciones SQL](docs/base-de-datos.md).
+
 ## Documentación y entrega pendientes
 
-- Scripts SQL de setup y seed, con instrucciones reproducibles.
 - CRUD con validaciones y manejo centralizado de errores.
 - Tests unitarios y HTTP.
 - Archivo OpenAPI y visualización de la documentación.

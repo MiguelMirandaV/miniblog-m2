@@ -12,7 +12,10 @@
     "start": "node --env-file-if-exists=.env src/server.js",
     "dev": "node --watch --env-file-if-exists=.env src/server.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:setup": "node --env-file-if-exists=.env scripts/run-sql.js setup",
+    "db:seed": "node --env-file-if-exists=.env scripts/run-sql.js seed",
+    "db:verify": "node --env-file-if-exists=.env scripts/verify-db.js"
   },
   "dependencies": {
     "express": "5.2.1",
