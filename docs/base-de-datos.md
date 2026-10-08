@@ -108,7 +108,7 @@ host miniblog,miniblog_test miniblog_user ::1/128 scram-sha-256
 
 El administrador puede localizar el archivo con `SHOW hba_file;`, comprobar sus reglas con `SELECT line_number, error FROM pg_hba_file_rules WHERE error IS NOT NULL;` y recargarlo con `SELECT pg_reload_conf();`. No copiar credenciales al SQL ni a este archivo de reglas.
 
-Estas reglas son específicas del usuario y las bases de MiniBlog. No modifican la administración del resto del servidor local ni constituyen una configuración completa de producción. PostgreSQL sigue escuchando en localhost. La autenticación de Railway se configurará con las variables proporcionadas por ese servicio.
+Estas reglas son específicas del usuario y las bases de MiniBlog. No modifican la administración del resto del servidor local ni constituyen una configuración completa de producción. PostgreSQL sigue escuchando en localhost. La conexión de Railway utiliza las variables proporcionadas por su servicio PostgreSQL, mediante una referencia en el servicio API.
 
 ## Consultas para explorar los datos
 

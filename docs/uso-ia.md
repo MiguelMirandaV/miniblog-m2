@@ -115,3 +115,17 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 **Resultado observado:** servicio activo con Node.js 24.21.0, npm start, conexión PostgreSQL y healthcheck /authors. URL pública: https://miniblog-m2-production.up.railway.app. Swagger UI y JSON OpenAPI respondieron 200. Diecisiete peticiones HTTPS iniciales comprobaron CRUD, relación y errores; nueve adicionales comprobaron persistencia completa de campos/fechas tras un nuevo despliegue, borrado de autor y cascada, respuestas 404 y limpieza. Quedaron tres autores y cinco posts ficticios del seed.
 
 **Límite:** esta comprobación remota complementa las 96 pruebas locales; no afirma disponibilidad permanente del servicio ni cobertura del 100%. El plazo de disponibilidad depende del plan y saldo de Railway.
+
+## 2026-10-08 — Auditoría y cierre
+
+**Solicitud del estudiante:** «ok revisa los pasos de tu plan y culmina».
+
+**Aporte de IA:** comparación del plan y la consigna con los entregables, copia limpia desde GitHub, instalación reproducible, preparación de una base temporal nueva, arranque HTTP real, ejecución final de tests/SQL/OpenAPI y revisión del historial y la documentación. Se añadió el informe de entrega y se actualizó el estado del README; no se incorporaron funcionalidades extra.
+
+**Resultado observado:** npm ci instaló 156 paquetes y reportó cero vulnerabilidades conocidas; setup y seed prepararon tres autores y cinco posts en una base nueva; el servidor arrancó desde esa copia. Los 96 tests pasaron, db:verify completó sus comprobaciones y OpenAPI validó once operaciones que coinciden con las rutas. Ocho commits y 72 blobs revisados sin coincidencias con contraseñas locales ni patrones reconocidos de tokens/claves privadas; exclusiones Git correctas y doce enlaces locales existentes válidos.
+
+**Corrección de la comprobación:** una consulta final esperaba exactamente los tres autores iniciales en Railway, pero encontró cuatro. Se retiró esa suposición sobre datos modificables, se utilizaron IDs reales y se verificaron lecturas/relaciones sin borrar recursos ajenos. La copia nueva sí conservó los tres autores y cinco posts del seed. La comprobación remota final aprobó detalles, listas, relación por autor, errores 400/404 y documentación.
+
+**Límite de evaluación:** la hoja externa de rúbrica volvió a resultar inaccesible. El cierre se evalúa contra la consigna y la guía disponibles, sin inventar puntuaciones. El envío en Henry sigue correspondiendo al estudiante.
+
+**Limpieza:** se eliminaron la base y el archivo .env de la copia temporal. El entorno del asistente bloqueó la señal de cierre del servidor de auditoría; el estudiante lo cerró desde su Terminal y se comprobó que el puerto temporal quedara libre. El servidor de desarrollo original no fue afectado.

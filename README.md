@@ -4,7 +4,7 @@ API REST para gestionar autores y publicaciones, desarrollada con Node.js, Expre
 
 ## Estado del proyecto
 
-Los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Están disponibles el esquema SQL, seed, 96 pruebas unitarias y de integración HTTP, OpenAPI y Swagger UI. La API está desplegada en Railway; las comprobaciones remotas se describen en la sección de despliegue.
+Proyecto terminado dentro del alcance obligatorio. Los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Están disponibles el esquema SQL, seed, 96 pruebas unitarias y de integración HTTP, OpenAPI y Swagger UI. La API está desplegada en Railway. Consulta el [informe de entrega y auditoría final](docs/entrega.md) para revisar la evidencia de cada etapa.
 
 - [API pública: autores](https://miniblog-m2-production.up.railway.app/authors).
 - [Swagger UI público](https://miniblog-m2-production.up.railway.app/docs/).
