@@ -4,7 +4,7 @@ API REST para gestionar autores y publicaciones, desarrollada con Node.js, Expre
 
 ## Estado del proyecto
 
-En desarrollo: estructura inicial, servidor Express, esquema SQL, seed y verificación real de base de datos disponibles. Todavía no están implementados los endpoints CRUD, la conexión del servidor HTTP a PostgreSQL, los tests unitarios/HTTP ni el despliegue.
+En desarrollo: los once endpoints CRUD funcionan con arrays en memoria. También están disponibles el esquema SQL, seed y verificación real de base de datos. La API todavía no utiliza PostgreSQL: al reiniciar el servidor se pierden sus cambios. La persistencia HTTP, los tests unitarios/HTTP y el despliegue se completarán en las siguientes etapas.
 
 ## Tecnologías
 
@@ -36,9 +36,9 @@ npm run db:verify
 npm run dev
 ```
 
-El servidor escucha en `http://localhost:3000`. En esta etapa inicial no hay rutas implementadas: una petición a `/` devuelve 404 y no representa un fallo de arranque.
+El servidor escucha en `http://localhost:3000`. Prueba `GET /authors` o `GET /posts`. La raíz `/` devuelve 404 porque no corresponde a un recurso de la API.
 
-Las URLs de `.env.example` contienen marcadores de posición. Configura tus credenciales únicamente en `.env`. Por ahora los scripts SQL utilizan PostgreSQL; el servidor Express se conectará en la etapa de persistencia.
+Las URLs de `.env.example` contienen marcadores de posición. Configura tus credenciales únicamente en `.env`. Por ahora los scripts SQL utilizan PostgreSQL y los servicios HTTP utilizan arrays independientes.
 
 ## Variables de entorno
 
@@ -73,7 +73,7 @@ src/
   server.js        Inicia el servidor HTTP
   routes/          Rutas y respuestas HTTP
   services/        Operaciones de autores/posts y consultas parametrizadas
-  db/              Configuración central del pool de PostgreSQL
+  db/              Arrays temporales; después contendrá el pool de PostgreSQL
   validators/      Validaciones reutilizables de entrada
   middlewares/     Manejo común de peticiones y errores
 sql/               Scripts de creación y datos iniciales
@@ -84,7 +84,7 @@ docs/              Documentación y registro de uso de IA
 
 Los archivos `.gitkeep` conservan temporalmente las carpetas que todavía están vacías.
 
-## Contrato previsto
+## Endpoints disponibles
 
 - `/authors`: GET y POST.
 - `/authors/:id`: GET, PUT y DELETE.
@@ -94,13 +94,15 @@ Los archivos `.gitkeep` conservan temporalmente las carpetas que todavía están
 
 La entidad se llama `authors` en toda la aplicación. La referencia a `users.id` que aparece en un punto de la consigna se interpreta como `authors.id`, de acuerdo con el modelo y el SQL de la guía.
 
+Consulta el [contrato HTTP, validaciones y ejemplos curl](docs/api.md). PUT reemplaza los campos editables completos; DELETE responde 204 sin cuerpo. Los errores utilizan `{ "error": "mensaje", "status": 400 }`, con el código correspondiente a cada caso.
+
 ## Base de datos
 
 Un autor puede tener varios posts; cada post pertenece a un autor existente. Eliminar un autor elimina sus posts mediante ON DELETE CASCADE. Los emails se almacenan en minúsculas y sin espacios exteriores para mantener la unicidad. Consulta el [modelo, las reglas y las verificaciones SQL](docs/base-de-datos.md).
 
 ## Documentación y entrega pendientes
 
-- CRUD con validaciones y manejo centralizado de errores.
+- Conectar los servicios CRUD a PostgreSQL y manejar sus errores.
 - Tests unitarios y HTTP.
 - Archivo OpenAPI y visualización de la documentación.
 - Guía de Railway, URL pública y evidencia de funcionamiento.

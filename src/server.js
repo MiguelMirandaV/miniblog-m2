@@ -8,4 +8,5 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`MiniBlog disponible en http://localhost:${port}`);
+  console.log('Almacenamiento temporal: memoria. Los cambios se pierden al reiniciar.');
 });

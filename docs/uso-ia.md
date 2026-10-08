@@ -43,3 +43,17 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 **Verificación observada:** setup/seed ejecutados en PostgreSQL; tres autores y cinco posts en la base de aplicación. Comprobados en miniblog_test: repetición sin duplicados, CRUD, JOIN, fechas/defaults, unicidad, campos obligatorios, textos blancos, email, FK, longitud, tipo booleano, borrado inexistente y cascada. Los cambios de los casos CRUD se revierten con ROLLBACK.
 
 **Distinción:** este verificador comprueba SQL real. Los tests unitarios y HTTP con Vitest/Supertest siguen pendientes de su etapa.
+
+## 2026-10-07 — HTTP con arrays
+
+**Solicitud:** continuación del paso 3 después de que el estudiante confirmó la verificación SQL y la exploración de los datos.
+
+**Aporte de IA:** implementación de los once endpoints con arrays temporales, servicios separados, validadores y middleware central de errores; documentación del contrato HTTP.
+
+**Decisiones:** conservar el contrato al sustituir los arrays por PostgreSQL; usar servicios async compatibles con la futura persistencia; aprovechar el manejo de errores async de Express 5 sin instalar wrappers adicionales. PUT reemplaza los campos editables completos, DELETE responde 204 sin cuerpo y se distingue un ID inválido de uno inexistente.
+
+**Validaciones anticipadas:** tipos antes de trim, límites de longitud, email normalizado y único, IDs compatibles con INTEGER, published:false válido y rechazo de campos no editables. Se rechazó el carácter nulo porque PostgreSQL no permite almacenarlo en texto. Se comprobó la longitud después de normalizar el email para evitar expansiones Unicode fuera del límite.
+
+**Verificación observada:** 56 peticiones de comprobación con Supertest contra la aplicación en memoria, incluyendo los once endpoints, CRUD, relación por autor, lista vacía, cascada, cuerpos inválidos, errores 400/404/413 y un fallo interno simulado con respuesta 500 genérica. Esta comprobación temporal no es todavía la suite de tests del entregable.
+
+**Comprobación del almacenamiento:** se inició además un servidor HTTP real, se creó un autor con respuesta 201 y se reinició el proceso. El nuevo autor dejó de existir, como corresponde a esta etapa con arrays. PostgreSQL conservó sus tres autores y cinco posts: las peticiones HTTP no modificaron la base. Los procesos temporales de verificación se cerraron.
