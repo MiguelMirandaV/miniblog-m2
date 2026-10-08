@@ -87,3 +87,17 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 **Resultado observado:** npm test aprobó 96 casos en cuatro archivos: 65 unitarios y 31 de integración. Se cubren los once endpoints, CRUD, validaciones, relaciones, cascada, unicidad concurrente, datos persistidos y respuestas HTTP de error. No se añadió ninguna dependencia ni funcionalidad de extra credit.
 
 **Límite:** los resultados no afirman cobertura del 100% ni validan por sí solos el despliegue. OpenAPI y Railway siguen pendientes de sus etapas.
+
+## 2026-10-08 — OpenAPI y documentación de entrega
+
+**Solicitud:** continuar el paso 6 tras confirmar que las 96 pruebas pasan.
+
+**Aporte de IA:** contrato OpenAPI 3.0.3 en JSON, Swagger UI local en /docs/, archivo servido en /openapi.json, comando docs:validate y guías de documentación/despliegue. README actualizado con instalación, pruebas, uso de documentación, versionado y estado real de la entrega.
+
+**Decisiones:** once operaciones del dominio, esquemas separados para entradas y salidas, errores consistentes, ejemplos ficticios, explicación de PUT completo y DELETE sin cuerpo. Servidor relativo para que la misma documentación funcione localmente y en Railway. No se publicaron credenciales ni se inventó un dominio de producción.
+
+**Dependencias justificadas:** swagger-ui-dist 5.33.1 para servir la documentación desde la propia aplicación y @apidevtools/swagger-parser 13.1.0 como herramienta de desarrollo para validar el contrato. Versiones fijadas y lockfile actualizado; npm audit durante la instalación reportó cero vulnerabilidades conocidas. El acceso a la caché npm global fue bloqueado por permisos del asistente; se utilizó una caché dentro de su carpeta de trabajo sin cambiar permisos del sistema.
+
+**Verificación observada:** docs:validate aprobó las once operaciones; comparación contra las declaraciones de rutas sin diferencias. Ejemplos de entrada aceptados por los validadores. Respuestas GET reales y error 400 comprobados contra campos/tipos de los modelos. HTML, JSON, CSS y JavaScript de documentación respondieron 200. Swagger UI se abrió en navegador y ejecutó GET /authors con respuesta 200 y cuatro autores. Tras integrar las rutas de documentación, npm test volvió a aprobar los 96 casos.
+
+**Estado:** documentación local comprobada; guía de Railway preparada con fuentes oficiales. El despliegue y la URL pública todavía deben ejecutarse y verificarse en el paso 7.

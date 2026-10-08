@@ -4,7 +4,7 @@
 
 Los once endpoints consultan PostgreSQL mediante el pool compartido de `pg`. Las altas, cambios y borrados se conservan al reiniciar el servidor. El contrato HTTP se mantiene respecto de la etapa inicial con arrays.
 
-URL local: `http://localhost:3000`. Envía los cuerpos con `Content-Type: application/json`.
+URL local: `http://localhost:3000`. Envía los cuerpos con `Content-Type: application/json`. Consulta también [Swagger UI y OpenAPI](openapi.md), disponibles en `/docs/` y `/openapi.json`.
 
 ## Endpoints
 

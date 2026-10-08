@@ -1,0 +1,777 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MiniBlog API",
+    "version": "1.0.0",
+    "description": "Proyecto Integrador M2 de Henry. CRUD de autores y publicaciones con PostgreSQL. Solo datos ficticios: esta API no incluye autenticación. Los IDs de los ejemplos son ilustrativos; utiliza los devueltos por tus peticiones. Listas sin paginación ni filtros; incluyen borradores. Textos normalizados sin espacios exteriores y sin caracteres nulos."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Mismo servidor que publica esta documentación"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autores",
+      "description": "Gestión de autores."
+    },
+    {
+      "name": "Posts",
+      "description": "Gestión de publicaciones y su relación con autores."
+    }
+  ],
+  "paths": {
+    "/authors": {
+      "get": {
+        "tags": [
+          "Autores"
+        ],
+        "operationId": "listAuthors",
+        "summary": "Listar authors",
+        "responses": {
+          "200": {
+            "description": "Lista ordenada por ID ascendente; puede estar vacía.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Autores"
+        ],
+        "operationId": "createAuthor",
+        "summary": "Crear author",
+        "responses": {
+          "201": {
+            "description": "Recurso creado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "Ruta relativa del recurso creado.",
+                "schema": {
+                  "type": "string"
+                },
+                "example": "/authors/1"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authors/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Autores"
+        ],
+        "operationId": "getAuthor",
+        "summary": "Obtener author",
+        "responses": {
+          "200": {
+            "description": "Recurso encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Autores"
+        ],
+        "operationId": "updateAuthor",
+        "summary": "Reemplazar campos editables",
+        "responses": {
+          "200": {
+            "description": "Recurso actualizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Reemplazo completo: exige todos los campos obligatorios. Los opcionales omitidos recuperan su valor por defecto. Conserva id y created_at.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Autores"
+        ],
+        "operationId": "deleteAuthor",
+        "summary": "Eliminar author",
+        "responses": {
+          "204": {
+            "description": "Eliminado; respuesta sin cuerpo."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Eliminar un autor también elimina todos sus posts (ON DELETE CASCADE)."
+      }
+    },
+    "/posts": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "listPosts",
+        "summary": "Listar posts",
+        "responses": {
+          "200": {
+            "description": "Lista ordenada por ID ascendente; puede estar vacía.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "createPost",
+        "summary": "Crear post",
+        "responses": {
+          "201": {
+            "description": "Recurso creado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "Ruta relativa del recurso creado.",
+                "schema": {
+                  "type": "string"
+                },
+                "example": "/posts/1"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "getPost",
+        "summary": "Obtener post",
+        "responses": {
+          "200": {
+            "description": "Recurso encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "updatePost",
+        "summary": "Reemplazar campos editables",
+        "responses": {
+          "200": {
+            "description": "Recurso actualizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Reemplazo completo: exige todos los campos obligatorios. Los opcionales omitidos recuperan su valor por defecto. Conserva id y created_at.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "deletePost",
+        "summary": "Eliminar post",
+        "responses": {
+          "204": {
+            "description": "Eliminado; respuesta sin cuerpo."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "No elimina al autor del post."
+      }
+    },
+    "/posts/author/{authorId}": {
+      "parameters": [
+        {
+          "name": "authorId",
+          "in": "path",
+          "required": true,
+          "description": "ID del autor: dígitos que representen un entero positivo válido.",
+          "schema": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "example": 1
+        }
+      ],
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "listPostsByAuthor",
+        "summary": "Listar posts con detalle de su autor",
+        "responses": {
+          "200": {
+            "description": "Posts del autor; [] si existe pero no tiene publicaciones.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostWithAuthor"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "description": "Cada resultado contiene el objeto author completo. Un autor existente sin posts produce 200 y []; un autor inexistente produce 404."
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthorInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "email"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Nombre no vacío. Se recortan espacios exteriores; límite después de normalizar.",
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Email único; se recortan espacios y se convierte a minúsculas. Límite después de normalizar.",
+            "maxLength": 150,
+            "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+            "example": "laura@example.com"
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "default": null,
+            "description": "Opcional. Se recortan espacios exteriores; omitirlo en POST o PUT equivale a null."
+          }
+        },
+        "example": {
+          "name": "Laura Pérez",
+          "email": "laura@example.com",
+          "bio": "Aprendiendo backend"
+        },
+        "description": "No se aceptan campos desconocidos, id, created_at ni caracteres nulos en textos. PUT exige los mismos campos obligatorios que POST."
+      },
+      "PostInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "author_id",
+          "title",
+          "content"
+        ],
+        "properties": {
+          "author_id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "description": "ID numérico de un autor existente; no se aceptan cadenas."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Título no vacío; se recortan espacios exteriores.",
+            "maxLength": 200
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Contenido no vacío; se recortan espacios exteriores."
+          },
+          "published": {
+            "type": "boolean",
+            "default": false,
+            "description": "Opcional. Omitirlo en POST o PUT equivale a false. No se aceptan cadenas ni null."
+          }
+        },
+        "example": {
+          "author_id": 1,
+          "title": "Mi primera publicación",
+          "content": "Estoy aprendiendo a construir una API.",
+          "published": false
+        },
+        "description": "No se aceptan campos desconocidos, id, created_at ni caracteres nulos en textos. PUT exige los mismos campos obligatorios que POST."
+      },
+      "Author": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "email",
+          "bio",
+          "created_at"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Nombre no vacío. Se recortan espacios exteriores; límite después de normalizar.",
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Email único; se recortan espacios y se convierte a minúsculas. Límite después de normalizar.",
+            "maxLength": 150,
+            "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+            "example": "laura@example.com"
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true,
+            "default": null,
+            "description": "Opcional. Se recortan espacios exteriores; omitirlo en POST o PUT equivale a null."
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Fecha de creación generada por PostgreSQL, conservada al editar."
+          }
+        },
+        "example": {
+          "id": 1,
+          "name": "Laura Pérez",
+          "email": "laura@example.com",
+          "bio": "Aprendiendo backend",
+          "created_at": "2026-10-08T05:00:00.000Z"
+        }
+      },
+      "Post": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "author_id",
+          "title",
+          "content",
+          "published",
+          "created_at"
+        ],
+        "properties": {
+          "author_id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "description": "ID numérico de un autor existente; no se aceptan cadenas."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Título no vacío; se recortan espacios exteriores.",
+            "maxLength": 200
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Contenido no vacío; se recortan espacios exteriores."
+          },
+          "published": {
+            "type": "boolean",
+            "default": false,
+            "description": "Opcional. Omitirlo en POST o PUT equivale a false. No se aceptan cadenas ni null."
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Fecha de creación generada por PostgreSQL, conservada al editar."
+          }
+        },
+        "example": {
+          "id": 1,
+          "author_id": 1,
+          "title": "Mi primera publicación",
+          "content": "Estoy aprendiendo a construir una API.",
+          "published": false,
+          "created_at": "2026-10-08T05:00:00.000Z"
+        }
+      },
+      "PostWithAuthor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "author_id",
+          "title",
+          "content",
+          "published",
+          "created_at",
+          "author"
+        ],
+        "properties": {
+          "author_id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "description": "ID numérico de un autor existente; no se aceptan cadenas."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Título no vacío; se recortan espacios exteriores.",
+            "maxLength": 200
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Contenido no vacío; se recortan espacios exteriores."
+          },
+          "published": {
+            "type": "boolean",
+            "default": false,
+            "description": "Opcional. Omitirlo en POST o PUT equivale a false. No se aceptan cadenas ni null."
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Fecha de creación generada por PostgreSQL, conservada al editar."
+          },
+          "author": {
+            "$ref": "#/components/schemas/Author"
+          }
+        },
+        "example": {
+          "id": 1,
+          "author_id": 1,
+          "title": "Mi primera publicación",
+          "content": "Estoy aprendiendo a construir una API.",
+          "published": false,
+          "created_at": "2026-10-08T05:00:00.000Z",
+          "author": {
+            "id": 1,
+            "name": "Laura Pérez",
+            "email": "laura@example.com",
+            "bio": "Aprendiendo backend",
+            "created_at": "2026-10-08T05:00:00.000Z"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "error",
+          "status"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "enum": [
+              400,
+              404,
+              413,
+              500
+            ]
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Solo dígitos de un entero de 1 a 2147483647. Un ID inválido produce 400; válido pero inexistente, 404.",
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "example": 1
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Entrada inválida: campos, tipos, ID, JSON, email duplicado o referencia a autor inexistente al escribir un post.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "El cuerpo contiene campos no permitidos.",
+              "status": 400
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "El recurso solicitado no existe.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Autor no encontrado.",
+              "status": 404
+            }
+          }
+        }
+      },
+      "PayloadTooLarge": {
+        "description": "Cuerpo JSON mayor de 100 KB.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "El cuerpo supera el límite de 100 KB.",
+              "status": 413
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Fallo inesperado; respuesta genérica sin detalles internos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Error interno del servidor.",
+              "status": 500
+            }
+          }
+        }
+      }
+    }
+  }
+}

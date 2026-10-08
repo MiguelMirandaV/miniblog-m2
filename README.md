@@ -4,7 +4,7 @@ API REST para gestionar autores y publicaciones, desarrollada con Node.js, Expre
 
 ## Estado del proyecto
 
-En desarrollo: los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Los cambios se conservan al reiniciar el servidor. Están disponibles el esquema SQL, seed y verificación real de base de datos. La suite de Vitest/Supertest incluye 96 pruebas unitarias y de integración HTTP. OpenAPI y el despliegue se completarán en las siguientes etapas.
+En desarrollo: los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Los cambios se conservan al reiniciar el servidor. Están disponibles el esquema SQL, seed y verificación real de base de datos. La suite de Vitest/Supertest incluye 96 pruebas unitarias y de integración HTTP. OpenAPI y Swagger UI están disponibles. El despliegue público en Railway es el siguiente paso; todavía no hay una URL de producción verificada.
 
 ## Tecnologías
 
@@ -24,10 +24,10 @@ Requisitos: Node.js 24, npm, Git y PostgreSQL 17 funcionando.
 git clone https://github.com/MiguelMirandaV/miniblog-m2.git
 cd miniblog-m2
 npm ci
-cp .env.example .env
+cp -n .env.example .env
 ```
 
-Crea el rol y las bases, configura tu `.env` y sigue los comandos de [preparación de PostgreSQL](docs/base-de-datos.md#preparación-local-desde-cero). Luego:
+El comando `cp -n` conserva un `.env` que ya exista. Crea el rol y las bases, configura tu `.env` y sigue los comandos de [preparación de PostgreSQL](docs/base-de-datos.md#preparación-local-desde-cero). Luego:
 
 ```bash
 npm run db:setup
@@ -64,6 +64,7 @@ Las URLs de `.env.example` contienen marcadores de posición. Configura tus cred
 | `npm run db:setup` | Crea tablas e índice en DATABASE_URL, sin borrar datos |
 | `npm run db:seed` | Inserta ejemplos ficticios sin duplicarlos en ejecuciones sucesivas |
 | `npm run db:verify` | Comprueba CRUD y restricciones en miniblog_test |
+| `npm run docs:validate` | Valida la estructura y referencias de OpenAPI |
 
 Para ejecutar toda la suite, PostgreSQL debe estar activo y TEST_DATABASE_URL configurada. No hace falta arrancar la API con `npm run dev`: Supertest utiliza puertos temporales. Los tests crean y eliminan sus propios registros exclusivamente en `miniblog_test`. Consulta la [guía de pruebas, aislamiento y diagnóstico](docs/testing.md).
 
@@ -81,7 +82,7 @@ src/
 sql/               Scripts de creación y datos iniciales
 scripts/           Ejecución de SQL y comprobación de base de datos
 tests/             Pruebas unitarias y HTTP
-docs/              Documentación y registro de uso de IA
+docs/              OpenAPI, Swagger UI, guías y registro de uso de IA
 ```
 
 `vitest.config.js` configura la ejecución de los tests en Node.js; las pruebas de integración usan una base local separada.
@@ -102,10 +103,27 @@ Consulta el [contrato HTTP, validaciones y ejemplos curl](docs/api.md). PUT reem
 
 Un autor puede tener varios posts; cada post pertenece a un autor existente. Eliminar un autor elimina sus posts mediante ON DELETE CASCADE. Los emails se almacenan en minúsculas y sin espacios exteriores para mantener la unicidad. Consulta el [modelo, las reglas y las verificaciones SQL](docs/base-de-datos.md).
 
-## Documentación y entrega pendientes
+## Documentación OpenAPI
 
-- Archivo OpenAPI y visualización de la documentación.
-- Guía de Railway, URL pública y evidencia de funcionamiento.
+Con la API ejecutándose, abre [Swagger UI local](http://localhost:3000/docs/). Expande GET /authors, pulsa Try it out y Execute para consultar datos reales. El contrato está en [docs/openapi.json](docs/openapi.json) y se publica también en `/openapi.json`.
+
+```bash
+npm run docs:validate
+```
+
+Consulta el [recorrido de Swagger UI y explicación del contrato](docs/openapi.md). Los ejemplos usan IDs ilustrativos; utiliza los devueltos por la API. Las operaciones de escritura ejecutadas desde Swagger UI modifican la base conectada.
+
+## Despliegue en Railway
+
+Sigue la [guía de despliegue](docs/railway.md): conectar el repositorio, añadir PostgreSQL, definir la referencia interna DATABASE_URL, preparar tablas/seed y arrancar con `npm start`. La guía distingue la URL privada de base de datos de la URL HTTPS pública para consultar la API.
+
+**Pendiente de verificar:** despliegue, URL pública y persistencia remota. Se completarán antes de la entrega; este repositorio no presenta el servicio como desplegado todavía.
+
+## Versionado y entrega
+
+Antes de guardar cambios, revisa `git status` y `git diff`. Añade solo archivos del proyecto, crea commits pequeños y descriptivos y publica la rama main. Comprueba en GitHub que el último commit esté disponible. `.env`, node_modules y logs no forman parte de la entrega.
+
+La entrega consiste en este repositorio público, el archivo OpenAPI, las instrucciones reproducibles y la URL pública de la API cuando haya sido verificada. Las pruebas se ejecutan con `npm test`; el contrato, con `npm run docs:validate`.
 
 ## Uso de IA
 
