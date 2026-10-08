@@ -31,7 +31,7 @@ Un autor puede tener cero o muchos posts. Cada post debe pertenecer a un autor e
 | `authors.id`, `posts.id` | Clave primaria con IDs generados por SERIAL |
 | `authors.name` | Obligatorio, máximo 100 caracteres y al menos un carácter no blanco |
 | `authors.email` | Obligatorio, único, máximo 150 caracteres y formato básico de correo |
-| Normalización del email | Guardado sin espacios exteriores y en minúsculas; la futura API lo normalizará antes de persistir |
+| Normalización del email | Guardado sin espacios exteriores y en minúsculas; la API lo normaliza antes de persistir |
 | `authors.bio` | Opcional, puede ser NULL |
 | `posts.author_id` | Obligatorio y debe referenciar un autor existente |
 | `posts.title` | Obligatorio, máximo 200 caracteres y no vacío |
@@ -40,9 +40,24 @@ Un autor puede tener cero o muchos posts. Cada post debe pertenecer a un autor e
 | `created_at` | TIMESTAMPTZ obligatorio con fecha de creación automática |
 | Eliminar autor | ON DELETE CASCADE elimina también sus posts |
 
-La base impide almacenar datos inválidos aunque una consulta no pase por la API. La API agregará validación de tipos y mensajes HTTP comprensibles en su etapa de implementación.
+La base impide almacenar datos inválidos aunque una consulta no pase por la API. La API valida tipos y responde con mensajes HTTP comprensibles antes de ejecutar SQL.
 
 PostgreSQL crea índices para PRIMARY KEY y UNIQUE. Agregamos `posts_author_id_idx` para consultar posts de un autor y facilitar el borrado relacionado. No agregamos índices redundantes sobre los IDs o el email.
+
+## Conexión de la API
+
+`src/db/pool.js` configura un único pool de conexiones reutilizables a partir de DATABASE_URL. El servidor verifica la conexión antes de abrir el puerto HTTP y cierra el pool al recibir SIGINT o SIGTERM.
+
+Los valores recibidos se envían separados del texto SQL mediante parámetros `$1`, `$2`, etc. Por ejemplo:
+
+```js
+const result = await pool.query(
+  'SELECT id, name, email, bio, created_at FROM authors WHERE id = $1',
+  [id],
+);
+```
+
+PostgreSQL genera los IDs y fechas; INSERT y UPDATE usan RETURNING para devolver los datos guardados. UNIQUE impide emails duplicados incluso ante peticiones simultáneas, y la clave foránea garantiza la relación con un autor existente. El middleware transforma estos errores SQL en respuestas 400 sin exponer detalles internos. Un fallo inesperado produce 500 con mensaje genérico.
 
 ## Preparación local desde cero
 

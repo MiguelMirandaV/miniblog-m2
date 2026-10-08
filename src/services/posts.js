@@ -1,45 +1,73 @@
-import { memory } from '../db/memory.js';
+import { pool } from '../db/pool.js';
 import { HttpError } from '../errors.js';
-import { getAuthorById } from './authors.js';
 
 export async function listPosts() {
-  return memory.posts;
+  const result = await pool.query(
+    'SELECT id, author_id, title, content, published, created_at FROM posts ORDER BY id',
+  );
+  return result.rows;
 }
 
 export async function getPostById(id) {
-  const post = memory.posts.find((item) => item.id === id);
-  if (!post) throw new HttpError(404, 'Post no encontrado.');
-  return post;
+  const result = await pool.query(
+    'SELECT id, author_id, title, content, published, created_at FROM posts WHERE id = $1',
+    [id],
+  );
+  if (result.rowCount === 0) throw new HttpError(404, 'Post no encontrado.');
+  return result.rows[0];
 }
 
 export async function listPostsByAuthor(authorId) {
-  const author = await getAuthorById(authorId);
-  return memory.posts
-    .filter((item) => item.author_id === authorId)
-    .map((post) => ({ ...post, author }));
-}
-
-function ensureAuthorExists(authorId) {
-  if (!memory.authors.some((item) => item.id === authorId)) {
-    throw new HttpError(400, 'author_id debe corresponder a un autor existente.');
-  }
+  // LEFT JOIN conserva al autor sin posts: así distinguimos [] de un autor inexistente.
+  const result = await pool.query(
+    `SELECT posts.id, posts.author_id, posts.title, posts.content, posts.published,
+            posts.created_at, authors.id AS author_detail_id, authors.name AS author_name,
+            authors.email AS author_email, authors.bio AS author_bio,
+            authors.created_at AS author_created_at
+     FROM authors
+     LEFT JOIN posts ON posts.author_id = authors.id
+     WHERE authors.id = $1
+     ORDER BY posts.id`,
+    [authorId],
+  );
+  if (result.rowCount === 0) throw new HttpError(404, 'Autor no encontrado.');
+  return result.rows.filter((row) => row.id !== null).map((row) => ({
+    id: row.id,
+    author_id: row.author_id,
+    title: row.title,
+    content: row.content,
+    published: row.published,
+    created_at: row.created_at,
+    author: {
+      id: row.author_detail_id,
+      name: row.author_name,
+      email: row.author_email,
+      bio: row.author_bio,
+      created_at: row.author_created_at,
+    },
+  }));
 }
 
 export async function createPost(data) {
-  ensureAuthorExists(data.author_id);
-  const post = { id: memory.nextPostId++, ...data, created_at: new Date().toISOString() };
-  memory.posts.push(post);
-  return post;
+  const result = await pool.query(
+    'INSERT INTO posts (author_id, title, content, published) VALUES ($1, $2, $3, $4) '
+      + 'RETURNING id, author_id, title, content, published, created_at',
+    [data.author_id, data.title, data.content, data.published],
+  );
+  return result.rows[0];
 }
 
 export async function updatePost(id, data) {
-  const post = await getPostById(id);
-  ensureAuthorExists(data.author_id);
-  Object.assign(post, data);
-  return post;
+  const result = await pool.query(
+    'UPDATE posts SET author_id = $1, title = $2, content = $3, published = $4 WHERE id = $5 '
+      + 'RETURNING id, author_id, title, content, published, created_at',
+    [data.author_id, data.title, data.content, data.published, id],
+  );
+  if (result.rowCount === 0) throw new HttpError(404, 'Post no encontrado.');
+  return result.rows[0];
 }
 
 export async function deletePost(id) {
-  await getPostById(id);
-  memory.posts = memory.posts.filter((item) => item.id !== id);
+  const result = await pool.query('DELETE FROM posts WHERE id = $1 RETURNING id', [id]);
+  if (result.rowCount === 0) throw new HttpError(404, 'Post no encontrado.');
 }

@@ -4,7 +4,7 @@ API REST para gestionar autores y publicaciones, desarrollada con Node.js, Expre
 
 ## Estado del proyecto
 
-En desarrollo: los once endpoints CRUD funcionan con arrays en memoria. También están disponibles el esquema SQL, seed y verificación real de base de datos. La API todavía no utiliza PostgreSQL: al reiniciar el servidor se pierden sus cambios. La persistencia HTTP, los tests unitarios/HTTP y el despliegue se completarán en las siguientes etapas.
+En desarrollo: los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Los cambios se conservan al reiniciar el servidor. Están disponibles el esquema SQL, seed y verificación real de base de datos. La suite de tests unitarios/HTTP, OpenAPI y el despliegue se completarán en las siguientes etapas.
 
 ## Tecnologías
 
@@ -38,7 +38,7 @@ npm run dev
 
 El servidor escucha en `http://localhost:3000`. Prueba `GET /authors` o `GET /posts`. La raíz `/` devuelve 404 porque no corresponde a un recurso de la API.
 
-Las URLs de `.env.example` contienen marcadores de posición. Configura tus credenciales únicamente en `.env`. Por ahora los scripts SQL utilizan PostgreSQL y los servicios HTTP utilizan arrays independientes.
+Las URLs de `.env.example` contienen marcadores de posición. Configura tus credenciales únicamente en `.env`. La API y los scripts de preparación utilizan DATABASE_URL. Las comprobaciones locales de SQL utilizan exclusivamente TEST_DATABASE_URL.
 
 ## Variables de entorno
 
@@ -46,7 +46,7 @@ Las URLs de `.env.example` contienen marcadores de posición. Configura tus cred
 |---|---|
 | `NODE_ENV` | Ambiente de ejecución; desarrollo local o producción |
 | `PORT` | Puerto HTTP; por defecto 3000 |
-| `DATABASE_URL` | Conexión PostgreSQL; se configurará localmente, sin publicarla |
+| `DATABASE_URL` | Conexión PostgreSQL utilizada por la API y los scripts de preparación |
 | `TEST_DATABASE_URL` | Conexión separada a miniblog_test, solo para comprobaciones locales |
 
 `.env.example` contiene ejemplos sin credenciales reales. `.env` está excluido de Git. En Railway las variables se configurarán en el servicio correspondiente.
@@ -73,7 +73,7 @@ src/
   server.js        Inicia el servidor HTTP
   routes/          Rutas y respuestas HTTP
   services/        Operaciones de autores/posts y consultas parametrizadas
-  db/              Arrays temporales; después contendrá el pool de PostgreSQL
+  db/              Pool compartido de conexiones a PostgreSQL
   validators/      Validaciones reutilizables de entrada
   middlewares/     Manejo común de peticiones y errores
 sql/               Scripts de creación y datos iniciales
@@ -102,7 +102,6 @@ Un autor puede tener varios posts; cada post pertenece a un autor existente. Eli
 
 ## Documentación y entrega pendientes
 
-- Conectar los servicios CRUD a PostgreSQL y manejar sus errores.
 - Tests unitarios y HTTP.
 - Archivo OpenAPI y visualización de la documentación.
 - Guía de Railway, URL pública y evidencia de funcionamiento.

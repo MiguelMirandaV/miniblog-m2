@@ -2,7 +2,7 @@
 
 ## Estado de esta etapa
 
-Los once endpoints funcionan con arrays en memoria. El servidor todavía no consulta PostgreSQL: las altas, cambios y borrados de la API se pierden al reiniciarlo. La siguiente etapa sustituirá estos arrays por SQL conservando el contrato HTTP.
+Los once endpoints consultan PostgreSQL mediante el pool compartido de `pg`. Las altas, cambios y borrados se conservan al reiniciar el servidor. El contrato HTTP se mantiene respecto de la etapa inicial con arrays.
 
 URL local: `http://localhost:3000`. Envía los cuerpos con `Content-Type: application/json`.
 
@@ -96,28 +96,33 @@ curl -i http://localhost:3000/authors
 curl -i -X POST http://localhost:3000/authors \
   -H 'Content-Type: application/json' \
   -d '{"name":"Laura Pérez","email":"laura@example.com","bio":"Aprendiendo backend"}'
+```
 
+Las respuestas son 200 y 201. Copia el `id` del autor creado. En la siguiente línea reemplaza `123` por ese número antes de ejecutar el bloque:
+
+```bash
+AUTHOR_ID=123
 curl -i -X POST http://localhost:3000/posts \
   -H 'Content-Type: application/json' \
-  -d '{"author_id":1,"title":"Mi primera publicación","content":"Estoy aprendiendo a construir una API.","published":false}'
+  -d "{\"author_id\":$AUTHOR_ID,\"title\":\"Mi primera publicación\",\"content\":\"Estoy aprendiendo a construir una API.\",\"published\":false}"
 
-curl -i http://localhost:3000/posts/author/1
+curl -i "http://localhost:3000/posts/author/$AUTHOR_ID"
 
 curl -i http://localhost:3000/authors/abc
 ```
 
-Respuestas esperadas, en orden: 200, 201, 201, 200 y 400. Si repites la creación de Laura dentro de la misma sesión del servidor, el email duplicado produce 400: es una validación esperada.
+Respuestas esperadas: 201, 200 y 400. Si repites la creación de Laura, incluso después de reiniciar, el email duplicado produce 400: es una validación esperada. Puedes obtener su ID con `GET /authors`. Las secuencias pueden tener saltos; no supongas que siempre empiezan en 1.
 
-Los ejemplos usan al autor 1 de los arrays iniciales. En la etapa con persistencia, toma el ID de los recursos existentes o del resultado de una creación; no supongas que las secuencias siempre empiezan en 1.
+Para comprobar la persistencia, detén el servidor con Ctrl+C, vuelve a ejecutar `npm run dev` y consulta `GET /authors`. Laura seguirá apareciendo con el mismo ID y fecha de creación.
 
 ## Organización del código
 
 ```text
-Petición HTTP → ruta → validación → servicio → array temporal
+Petición HTTP → ruta → validación → servicio → pool de pg → PostgreSQL
                          ↓             ↓
                      middleware de errores → respuesta JSON
 ```
 
-Las rutas seleccionan la operación y el código HTTP. Los validadores comprueban y normalizan entradas. Los servicios gestionan los recursos y sus relaciones. El middleware final unifica los errores. En Express 5, los errores de handlers async llegan automáticamente al manejador de errores.
+Las rutas seleccionan la operación y el código HTTP. Los validadores comprueban y normalizan entradas. Los servicios ejecutan SQL parametrizado y devuelven las filas de PostgreSQL. Un LEFT JOIN permite obtener posts con su autor y distinguir un autor sin posts de un autor inexistente. El middleware final unifica los errores. En Express 5, los errores de handlers async llegan automáticamente al manejador de errores.
 
 Referencia: [manejo de errores de Express 5](https://expressjs.com/en/guide/error-handling.html).

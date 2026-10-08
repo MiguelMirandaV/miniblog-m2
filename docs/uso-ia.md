@@ -57,3 +57,19 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 **Verificación observada:** 56 peticiones de comprobación con Supertest contra la aplicación en memoria, incluyendo los once endpoints, CRUD, relación por autor, lista vacía, cascada, cuerpos inválidos, errores 400/404/413 y un fallo interno simulado con respuesta 500 genérica. Esta comprobación temporal no es todavía la suite de tests del entregable.
 
 **Comprobación del almacenamiento:** se inició además un servidor HTTP real, se creó un autor con respuesta 201 y se reinició el proceso. El nuevo autor dejó de existir, como corresponde a esta etapa con arrays. PostgreSQL conservó sus tres autores y cinco posts: las peticiones HTTP no modificaron la base. Los procesos temporales de verificación se cerraron.
+
+## 2026-10-08 — Persistencia PostgreSQL
+
+**Solicitud:** continuar el paso 4 del plan aprobado después de confirmar la etapa HTTP.
+
+**Aporte de IA:** sustitución de arrays por consultas SQL parametrizadas, pool compartido, manejo de errores PostgreSQL, comprobación de conexión al arrancar y cierre ordenado del servidor y del pool.
+
+**Decisiones:** conservar rutas, validadores y contrato HTTP; obtener IDs/fechas con RETURNING; delegar unicidad y relaciones a las restricciones de la base. Usar un LEFT JOIN para distinguir autor inexistente de autor sin publicaciones sin consultas por cada post. No ejecutar setup ni seed automáticamente al arrancar.
+
+**Verificación observada:** 61 peticiones HTTP con Supertest sobre miniblog_test, incluyendo los once endpoints, CRUD, errores, relaciones, cascada y dos creaciones simultáneas con el mismo email (una 201 y otra 400). Un texto con sintaxis de inyección SQL se guardó literalmente sin ejecutar instrucciones. Se simuló una caída de consulta y se comprobó una respuesta 500 genérica. Los datos creados por la comprobación se limpiaron y los recuentos de la base de aplicación no cambiaron.
+
+**Persistencia y arranque:** un proceso HTTP real creó autor y post; tras detenerlo y arrancar otro proceso, ambos conservaron todos sus campos y fechas. Se verificaron cierre por SIGTERM, rechazo de credenciales incorrectas, URL ausente/inválida, puerto inválido y puerto ocupado sin exponer secretos.
+
+**Error detectado y corregido:** Express 5 también llama al callback de app.listen cuando falla la apertura del puerto. Se corrigió el callback para evitar anunciar un arranque exitoso en ese caso y se volvió a comprobar el puerto ocupado.
+
+**Límite:** estas comprobaciones temporales de integración no constituyen todavía la suite versionada de Vitest/Supertest. Esa suite corresponde al siguiente paso.
