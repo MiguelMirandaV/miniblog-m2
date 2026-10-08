@@ -1,6 +1,6 @@
 # Despliegue en Railway
 
-**Estado:** guía preparada; despliegue público pendiente de ejecutar y comprobar. No hay todavía una URL de producción verificada.
+**Estado:** API desplegada con PostgreSQL remoto. Dominio público: [miniblog-m2-production.up.railway.app](https://miniblog-m2-production.up.railway.app/authors). Documentación interactiva: [Swagger UI](https://miniblog-m2-production.up.railway.app/docs/).
 
 ## Servicios y variables
 
@@ -21,7 +21,7 @@ La conexión entre servicios debe usar la URL **interna** de PostgreSQL. `DATABA
 
 La aplicación usa Node.js 24, declarado en package.json y .node-version. Comprueba en los logs que Railway use esa versión e instale las dependencias del lockfile. No existe una compilación del código JavaScript: el comando de arranque es `npm start`.
 
-El archivo `railway.json` versiona estos ajustes para el despliegue inicial. Railway los lee al desplegar; los valores del archivo prevalecen sobre el panel. [Configuración como código](https://docs.railway.com/config-as-code/reference).
+Configura estos ajustes en **Settings → Deploy** del servicio API. Durante este despliegue, el panel indicó que los servicios nuevos ya no pueden activar el sistema legado Config as Code. Por eso se retiró `railway.json` y se aplicaron los comandos directamente en el panel; no se presupone que Railway lea ese archivo.
 
 | Ajuste | Valor |
 |---|---|
@@ -31,7 +31,7 @@ El archivo `railway.json` versiona estos ajustes para el despliegue inicial. Rai
 
 El comando previo crea tablas e inserta los ejemplos ficticios antes del arranque. Railway lo ejecuta con acceso a las variables y la red privada; si falla, el despliegue se detiene. Revisa primero que PostgreSQL esté disponible. [Pre-deploy commands](https://docs.railway.com/deployments/pre-deploy-command).
 
-Tras completar la carga inicial, cambia `deploy.preDeployCommand` en `railway.json` a `["npm run db:setup"]` y publica el cambio para que futuros despliegues no vuelvan a insertar ejemplos borrados intencionalmente. El seed es repetible secuencialmente, pero no debe ejecutarse en cada arranque del servidor. El setup actual no reemplaza migraciones para cambios futuros del esquema.
+Tras completar la carga inicial, cambia **Pre-deploy Command** en el panel a `npm run db:setup`, guarda y aplica el cambio para que futuros despliegues no vuelvan a insertar ejemplos borrados intencionalmente. El seed es repetible secuencialmente, pero no debe ejecutarse en cada arranque del servidor. El setup actual no reemplaza migraciones para cambios futuros del esquema.
 
 La API escucha en `0.0.0.0` y utiliza PORT del entorno. No hace falta fijar el puerto local 3000 en Railway. No configures `npm test` como comando de arranque: la integración exige la base de pruebas local. Ejecuta las pruebas antes de publicar cambios.
 
@@ -39,10 +39,10 @@ La API escucha en `0.0.0.0` y utiliza PORT del entorno. No hace falta fijar el p
 
 En el servicio **API**, abre **Settings → Networking → Public Networking → Generate Domain**. Railway proporciona un dominio HTTPS. [Public Networking](https://docs.railway.com/networking/public-networking).
 
-Sustituye el marcador del siguiente comando por el dominio real de tu API, sin barra final:
+Para consultar el despliegue de este proyecto:
 
 ```bash
-API_URL='https://TU-DOMINIO-REAL'
+API_URL='https://miniblog-m2-production.up.railway.app'
 curl -i "$API_URL/authors"
 curl -i "$API_URL/posts"
 curl -i "$API_URL/posts/author/1"
@@ -50,7 +50,11 @@ curl -i "$API_URL/posts/author/1"
 
 La tercera consulta usa un ID ilustrativo: reemplázalo por uno recibido en la primera. Abre además `/docs/` y `/openapi.json` bajo el dominio real. La raíz `/` responde 404 por diseño; no la uses como healthcheck.
 
-Antes de entregar, comprueba también creación, actualización, relación y borrado usando recursos ficticios propios; verifica persistencia tras reiniciar el servicio y limpia esos recursos. Registra la URL y el resultado real en el README. Hasta completar esas comprobaciones no debe marcarse el despliegue como verificado.
+Si despliegas tu propia copia, comprueba también creación, actualización, relación y borrado usando recursos ficticios propios; verifica persistencia tras reiniciar el servicio y limpia esos recursos.
+
+En este despliegue se comprobó Node.js 24.21.0, el arranque con `npm start`, el healthcheck `/authors` y el dominio dirigido al puerto 8080 asignado por Railway. El comando inicial preparó tablas y seed; los despliegues posteriores utilizan únicamente `npm run db:setup`.
+
+El 8 de octubre de 2026, 26 peticiones HTTPS comprobaron los once endpoints, validaciones y cascada. Se creó un autor con un post, se actualizó y se compararon todos sus campos y fechas después de que Railway activara un nuevo despliegue. La comparación coincidió. Se limpiaron únicamente esos recursos propios y quedaron tres autores y cinco posts ficticios del seed. Swagger UI y OpenAPI también respondieron 200.
 
 ## Diagnóstico y mantenimiento
 

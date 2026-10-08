@@ -101,3 +101,17 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 **Verificación observada:** docs:validate aprobó las once operaciones; comparación contra las declaraciones de rutas sin diferencias. Ejemplos de entrada aceptados por los validadores. Respuestas GET reales y error 400 comprobados contra campos/tipos de los modelos. HTML, JSON, CSS y JavaScript de documentación respondieron 200. Swagger UI se abrió en navegador y ejecutó GET /authors con respuesta 200 y cuatro autores. Tras integrar las rutas de documentación, npm test volvió a aprobar los 96 casos.
 
 **Estado:** documentación local comprobada; guía de Railway preparada con fuentes oficiales. El despliegue y la URL pública todavía deben ejecutarse y verificarse en el paso 7.
+
+## 2026-10-08 — Despliegue y persistencia remota
+
+**Solicitud:** continuar el paso 7 del plan aprobado y resolver la conexión con Railway.
+
+**Aporte de IA:** configuración del servicio API desde GitHub main, PostgreSQL remoto, referencia DATABASE_URL, comandos de preparación/arranque, healthcheck y dominio público. El estudiante completó personalmente la verificación de identidad de GitHub cuando fue requerida.
+
+**Corrección documentada:** se preparó inicialmente railway.json siguiendo la documentación del sistema legado Config as Code. El panel actual informó que los servicios nuevos ya no pueden activarlo; esos ajustes no se aplicaron y el primer arranque carecía de DATABASE_URL. Se retiró el archivo, se configuró la referencia de base de datos y se guardaron los comandos directamente en Settings. No se atribuye el despliegue exitoso al archivo retirado.
+
+**Decisiones:** base remota separada de las bases locales; NODE_ENV=production; DATABASE_URL referencia el servicio Postgres sin publicar el secreto; PORT suministrado por Railway. Preparación inicial con setup y seed; luego solo setup antes de nuevos despliegues para conservar las modificaciones de datos. El arranque permanece separado de la preparación SQL.
+
+**Resultado observado:** servicio activo con Node.js 24.21.0, npm start, conexión PostgreSQL y healthcheck /authors. URL pública: https://miniblog-m2-production.up.railway.app. Swagger UI y JSON OpenAPI respondieron 200. Diecisiete peticiones HTTPS iniciales comprobaron CRUD, relación y errores; nueve adicionales comprobaron persistencia completa de campos/fechas tras un nuevo despliegue, borrado de autor y cascada, respuestas 404 y limpieza. Quedaron tres autores y cinco posts ficticios del seed.
+
+**Límite:** esta comprobación remota complementa las 96 pruebas locales; no afirma disponibilidad permanente del servicio ni cobertura del 100%. El plazo de disponibilidad depende del plan y saldo de Railway.

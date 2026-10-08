@@ -4,7 +4,11 @@ API REST para gestionar autores y publicaciones, desarrollada con Node.js, Expre
 
 ## Estado del proyecto
 
-En desarrollo: los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Los cambios se conservan al reiniciar el servidor. Están disponibles el esquema SQL, seed y verificación real de base de datos. La suite de Vitest/Supertest incluye 96 pruebas unitarias y de integración HTTP. OpenAPI y Swagger UI están disponibles. El despliegue público en Railway es el siguiente paso; todavía no hay una URL de producción verificada.
+Los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Están disponibles el esquema SQL, seed, 96 pruebas unitarias y de integración HTTP, OpenAPI y Swagger UI. La API está desplegada en Railway; las comprobaciones remotas se describen en la sección de despliegue.
+
+- [API pública: autores](https://miniblog-m2-production.up.railway.app/authors).
+- [Swagger UI público](https://miniblog-m2-production.up.railway.app/docs/).
+- [Contrato OpenAPI público](https://miniblog-m2-production.up.railway.app/openapi.json).
 
 ## Tecnologías
 
@@ -12,7 +16,7 @@ En desarrollo: los once endpoints CRUD utilizan PostgreSQL mediante consultas pa
 - Express 5 para el servidor HTTP.
 - PostgreSQL 17 y `pg` para persistencia mediante SQL directo.
 - Vitest y Supertest para pruebas automatizadas.
-- GitHub para versionado y Railway para el despliegue previsto.
+- GitHub para versionado y Railway para el despliegue.
 
 Las versiones exactas de las dependencias se conservan en `package-lock.json`.
 
@@ -49,7 +53,7 @@ Las URLs de `.env.example` contienen marcadores de posición. Configura tus cred
 | `DATABASE_URL` | Conexión PostgreSQL utilizada por la API y los scripts de preparación |
 | `TEST_DATABASE_URL` | Conexión separada a miniblog_test, solo para comprobaciones locales |
 
-`.env.example` contiene ejemplos sin credenciales reales. `.env` está excluido de Git. En Railway las variables se configurarán en el servicio correspondiente.
+`.env.example` contiene ejemplos sin credenciales reales. `.env` está excluido de Git. En Railway las variables están configuradas en el servicio correspondiente; DATABASE_URL referencia la conexión del servicio Postgres.
 
 ## Comandos
 
@@ -117,13 +121,15 @@ Consulta el [recorrido de Swagger UI y explicación del contrato](docs/openapi.m
 
 Sigue la [guía de despliegue](docs/railway.md): conectar el repositorio, añadir PostgreSQL, definir la referencia interna DATABASE_URL, preparar tablas/seed y arrancar con `npm start`. La guía distingue la URL privada de base de datos de la URL HTTPS pública para consultar la API.
 
-**Pendiente de verificar:** despliegue, URL pública y persistencia remota. Se completarán antes de la entrega; este repositorio no presenta el servicio como desplegado todavía.
+El servicio público utiliza PostgreSQL remoto, independiente de la base local. La raíz `/` responde 404 por diseño; utiliza `/authors`, `/posts` o `/docs/` para explorar la API.
+
+Verificado el 8 de octubre de 2026: 26 peticiones HTTPS comprobaron los once endpoints, CRUD, validaciones, relación por autor y cascada. Un autor y su post conservaron todos sus campos y fechas después de un nuevo despliegue; al terminar se eliminaron los recursos temporales propios. Quedaron los tres autores y cinco posts ficticios del seed. `/docs/` y `/openapi.json` también respondieron 200.
 
 ## Versionado y entrega
 
 Antes de guardar cambios, revisa `git status` y `git diff`. Añade solo archivos del proyecto, crea commits pequeños y descriptivos y publica la rama main. Comprueba en GitHub que el último commit esté disponible. `.env`, node_modules y logs no forman parte de la entrega.
 
-La entrega consiste en este repositorio público, el archivo OpenAPI, las instrucciones reproducibles y la URL pública de la API cuando haya sido verificada. Las pruebas se ejecutan con `npm test`; el contrato, con `npm run docs:validate`.
+La entrega consiste en este repositorio público, el archivo OpenAPI, las instrucciones reproducibles y los enlaces públicos indicados arriba. Las pruebas se ejecutan con `npm test`; el contrato, con `npm run docs:validate`.
 
 ## Uso de IA
 
@@ -131,4 +137,4 @@ El desarrollo cuenta con asistencia de IA y revisión mediante comprobaciones re
 
 ## Datos y credenciales
 
-Se usarán exclusivamente datos ficticios para la demostración. La API requerida no incluye autenticación. Nunca deben publicarse archivos `.env`, tokens, contraseñas ni URLs de PostgreSQL que contengan credenciales.
+Se utilizan exclusivamente datos ficticios para la demostración. La API requerida no incluye autenticación. Nunca deben publicarse archivos `.env`, tokens, contraseñas ni URLs de PostgreSQL que contengan credenciales.
