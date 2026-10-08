@@ -73,3 +73,17 @@ Este registro describe la asistencia recibida durante el proyecto y cómo se com
 **Error detectado y corregido:** Express 5 también llama al callback de app.listen cuando falla la apertura del puerto. Se corrigió el callback para evitar anunciar un arranque exitoso en ese caso y se volvió a comprobar el puerto ocupado.
 
 **Límite:** estas comprobaciones temporales de integración no constituyen todavía la suite versionada de Vitest/Supertest. Esa suite corresponde al siguiente paso.
+
+## 2026-10-08 — Suite de pruebas
+
+**Solicitud del estudiante:** «listo, continúa con paso 5» después de resolver una segunda instancia que ocupaba el puerto 3000.
+
+**Aporte de IA:** configuración de Vitest, tests unitarios de validadores y servicios, protección del destino de pruebas y tests HTTP con Supertest sobre PostgreSQL real. Se añadieron comandos por grupo y documentación de ejecución/aislamiento.
+
+**Decisiones:** mantener las pruebas unitarias independientes de PostgreSQL; importar app/pool solo después de validar la base local de pruebas; crear fixtures propios sin depender del seed ni de IDs fijos; limpiar únicamente autores creados por cada caso y sus posts mediante cascada. No vaciar tablas ni utilizar la base de aplicación como alternativa.
+
+**Error del test corregido:** un beforeEach con retorno implícito devolvía la función mock, que Vitest interpretaba como limpieza. El caso que simulaba un error SQL fallaba durante esa limpieza accidental. Se cambió el hook a un bloque sin retorno; no se debilitó la expectativa ni se modificó la aplicación para ocultar el fallo.
+
+**Resultado observado:** npm test aprobó 96 casos en cuatro archivos: 65 unitarios y 31 de integración. Se cubren los once endpoints, CRUD, validaciones, relaciones, cascada, unicidad concurrente, datos persistidos y respuestas HTTP de error. No se añadió ninguna dependencia ni funcionalidad de extra credit.
+
+**Límite:** los resultados no afirman cobertura del 100% ni validan por sí solos el despliegue. OpenAPI y Railway siguen pendientes de sus etapas.

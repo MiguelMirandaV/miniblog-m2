@@ -4,7 +4,7 @@ API REST para gestionar autores y publicaciones, desarrollada con Node.js, Expre
 
 ## Estado del proyecto
 
-En desarrollo: los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Los cambios se conservan al reiniciar el servidor. Están disponibles el esquema SQL, seed y verificación real de base de datos. La suite de tests unitarios/HTTP, OpenAPI y el despliegue se completarán en las siguientes etapas.
+En desarrollo: los once endpoints CRUD utilizan PostgreSQL mediante consultas parametrizadas. Los cambios se conservan al reiniciar el servidor. Están disponibles el esquema SQL, seed y verificación real de base de datos. La suite de Vitest/Supertest incluye 96 pruebas unitarias y de integración HTTP. OpenAPI y el despliegue se completarán en las siguientes etapas.
 
 ## Tecnologías
 
@@ -57,13 +57,15 @@ Las URLs de `.env.example` contienen marcadores de posición. Configura tus cred
 |---|---|
 | `npm run dev` | Arranca el servidor y lo reinicia al guardar cambios |
 | `npm start` | Arranca el servidor sin observar cambios |
-| `npm test` | Ejecuta Vitest una vez; los casos se añadirán en la etapa de testing |
+| `npm test` | Ejecuta las 96 pruebas unitarias y de integración una vez |
 | `npm run test:watch` | Ejecuta Vitest en modo observación |
+| `npm run test:unit` | Ejecuta solo los tests unitarios, sin PostgreSQL |
+| `npm run test:integration` | Ejecuta HTTP y SQL real sobre miniblog_test |
 | `npm run db:setup` | Crea tablas e índice en DATABASE_URL, sin borrar datos |
 | `npm run db:seed` | Inserta ejemplos ficticios sin duplicarlos en ejecuciones sucesivas |
 | `npm run db:verify` | Comprueba CRUD y restricciones en miniblog_test |
 
-Actualmente `npm test` informa que no hay archivos de pruebas. No se considera una suite aprobada hasta que existan y pasen casos reales.
+Para ejecutar toda la suite, PostgreSQL debe estar activo y TEST_DATABASE_URL configurada. No hace falta arrancar la API con `npm run dev`: Supertest utiliza puertos temporales. Los tests crean y eliminan sus propios registros exclusivamente en `miniblog_test`. Consulta la [guía de pruebas, aislamiento y diagnóstico](docs/testing.md).
 
 ## Organización
 
@@ -82,7 +84,7 @@ tests/             Pruebas unitarias y HTTP
 docs/              Documentación y registro de uso de IA
 ```
 
-Los archivos `.gitkeep` conservan temporalmente las carpetas que todavía están vacías.
+`vitest.config.js` configura la ejecución de los tests en Node.js; las pruebas de integración usan una base local separada.
 
 ## Endpoints disponibles
 
@@ -102,7 +104,6 @@ Un autor puede tener varios posts; cada post pertenece a un autor existente. Eli
 
 ## Documentación y entrega pendientes
 
-- Tests unitarios y HTTP.
 - Archivo OpenAPI y visualización de la documentación.
 - Guía de Railway, URL pública y evidencia de funcionamiento.
 

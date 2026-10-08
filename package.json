@@ -15,7 +15,9 @@
     "test:watch": "vitest",
     "db:setup": "node --env-file-if-exists=.env scripts/run-sql.js setup",
     "db:seed": "node --env-file-if-exists=.env scripts/run-sql.js seed",
-    "db:verify": "node --env-file-if-exists=.env scripts/verify-db.js"
+    "db:verify": "node --env-file-if-exists=.env scripts/verify-db.js",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration"
   },
   "dependencies": {
     "express": "5.2.1",

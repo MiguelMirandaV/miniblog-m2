@@ -146,7 +146,7 @@ Para salir de psql, utiliza `\q`. Los IDs pueden tener saltos: una secuencia no 
 
 El script solo acepta una conexión local a la base `miniblog_test`, diferente de la base de la aplicación. Aplica setup/seed ahí y envuelve los cambios de los casos CRUD en una transacción que revierte al terminar. No trunca tablas ni borra la base. Los incrementos de secuencias pueden permanecer.
 
-Esta verificación real de SQL complementará los tests unitarios y HTTP de Vitest/Supertest; no los sustituye.
+Esta verificación real de SQL complementa los [tests unitarios y HTTP de Vitest/Supertest](testing.md); no los sustituye.
 
 ## Referencias
 
