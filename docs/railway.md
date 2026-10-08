@@ -21,7 +21,7 @@ La conexión entre servicios debe usar la URL **interna** de PostgreSQL. `DATABA
 
 La aplicación usa Node.js 24, declarado en package.json y .node-version. Comprueba en los logs que Railway use esa versión e instale las dependencias del lockfile. No existe una compilación del código JavaScript: el comando de arranque es `npm start`.
 
-En la configuración de despliegue del servicio API:
+El archivo `railway.json` versiona estos ajustes para el despliegue inicial. Railway los lee al desplegar; los valores del archivo prevalecen sobre el panel. [Configuración como código](https://docs.railway.com/config-as-code/reference).
 
 | Ajuste | Valor |
 |---|---|
@@ -31,7 +31,7 @@ En la configuración de despliegue del servicio API:
 
 El comando previo crea tablas e inserta los ejemplos ficticios antes del arranque. Railway lo ejecuta con acceso a las variables y la red privada; si falla, el despliegue se detiene. Revisa primero que PostgreSQL esté disponible. [Pre-deploy commands](https://docs.railway.com/deployments/pre-deploy-command).
 
-Tras completar la carga inicial, deja el comando previo en `npm run db:setup` para que futuros despliegues no vuelvan a insertar ejemplos borrados intencionalmente. El seed es repetible secuencialmente, pero no debe ejecutarse en cada arranque del servidor. El setup actual no reemplaza migraciones para cambios futuros del esquema.
+Tras completar la carga inicial, cambia `deploy.preDeployCommand` en `railway.json` a `["npm run db:setup"]` y publica el cambio para que futuros despliegues no vuelvan a insertar ejemplos borrados intencionalmente. El seed es repetible secuencialmente, pero no debe ejecutarse en cada arranque del servidor. El setup actual no reemplaza migraciones para cambios futuros del esquema.
 
 La API escucha en `0.0.0.0` y utiliza PORT del entorno. No hace falta fijar el puerto local 3000 en Railway. No configures `npm test` como comando de arranque: la integración exige la base de pruebas local. Ejecuta las pruebas antes de publicar cambios.
 
